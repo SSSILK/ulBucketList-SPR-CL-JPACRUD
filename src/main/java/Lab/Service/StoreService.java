@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 public class StoreService {
     StoreRepository storeRepository;
     @Autowired
@@ -20,14 +22,15 @@ public class StoreService {
      * @return the persisted store
      */
     public Store persistStore(Store store){
-        return null;
+        return storeRepository.save(store);
     }
     /**
      * TODO: get all store entities
      * @return all store entities
      */
     public List<Store> getAllStores(){
-        return null;
+
+        return storeRepository.findAll();
     }
     /**
      * TODO: given an id of a store, return the store.
@@ -36,12 +39,14 @@ public class StoreService {
      * @return a store entity
      */
     public Store getStoreById(long id){
-        return null;
+        return storeRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Store not found with id " + id));
     }
     /**
      * TODO: given an id of an existing store, delete the store
      */
     public void deleteStore(long id){
+        storeRepository.deleteById(id);
 //        code here
     }
     /**
@@ -50,7 +55,14 @@ public class StoreService {
      * @return the updated store entity
      */
     public Store updateStore(long id, Store replacement){
-        return null;
+        Store store = storeRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Store not found with id " + id));
+
+    // copy replacement's data into the existing store
+    store.setName(replacement.getName());
+    store.setAddress(replacement.getAddress());
+
+    return storeRepository.save(store);
     }
 
 }
